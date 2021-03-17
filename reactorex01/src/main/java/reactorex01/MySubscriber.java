@@ -4,31 +4,35 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 // <T> 구독할 데이터 타입
-public class MySubscriber implements Subscriber<Integer>{
+public class MySubscriber implements Subscriber<Integer> {
 
-	private Integer size = 1;
-	
+	private Integer size = 2; // nobounded
+	private Subscription s;
+
 	public void onSubscribe(Subscription s) {
-		System.out.println("2. 구독 응답 완료");
+		this.s = s;
+		System.out.println("3. MySubscriber - 구독 정보 돌려받음.");
 		// 신문 줘!! (구독의 시작)
 		s.request(size); // 내가 하루에 읽을 수 있는 글자수의 한계 (백프레셔 = Back pressure)
-		System.out.println("3. 신문 하루에 " +size+ "만큼 줘!!");
 	}
 
 	// 데이터를 돌려받는 함수
 	public void onNext(Integer t) {
-		
-		
+		System.out.println("onNext - 신문 " + t);
+		size--; // 1이 된다.
+		if (size == 0) {
+			size = 2;
+			s.request(size);
+		}
 	}
 
 	public void onError(Throwable t) {
-	
-		
+
 	}
 
 	public void onComplete() {
-		
-		
+		System.out.println("신문 다 받음");
+
 	}
 
 }
